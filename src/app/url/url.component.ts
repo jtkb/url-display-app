@@ -58,9 +58,13 @@ export class UrlComponent implements OnInit, OnDestroy {
     this.drag = false;
     this.ctx1.clearRect(0, 0, this.layer1.nativeElement.width, this.layer1.nativeElement.height);
 
-    this.ctx0.setLineDash([]);
-    this.ctx0.strokeStyle = 'blue';
-    this.ctx0.strokeRect(this.startX, this.startY, this.w, this.h);
+    if (this.w > 0 && this.h > 0) {
+      this.ctx0.setLineDash([]);
+      this.ctx0.strokeStyle = 'blue';
+      this.ctx0.strokeRect(this.startX, this.startY, this.w, this.h);
+      this.w = 0;
+      this.h = 0;
+    }
 
   };
 
