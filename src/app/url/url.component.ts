@@ -13,7 +13,8 @@ export class UrlComponent implements OnInit, OnDestroy {
 
   @Input() lineScanData: Observable<Linescandata>;
   @Input() scanIndex: number;
-  @ViewChild('myCanvas', {static: true}) canvasRef: ElementRef<HTMLCanvasElement>;
+  @ViewChild('layer0', {static: true}) layer0: ElementRef<HTMLCanvasElement>;
+  @ViewChild('layer1', {static: true}) layer1: ElementRef<HTMLCanvasElement>;
 
   urls: Url[][];
   linesScanDataSubscription: Subscription;
@@ -24,7 +25,8 @@ export class UrlComponent implements OnInit, OnDestroy {
   private w: number;
   private drag: boolean = false;
   private mouseEventSubscription: Subscription;
-  private ctx: CanvasRenderingContext2D;
+  private ctx0: CanvasRenderingContext2D;
+  private ctx1: CanvasRenderingContext2D;
 
   constructor() {
   }
@@ -35,72 +37,42 @@ export class UrlComponent implements OnInit, OnDestroy {
       this.linesScanDataSubscription.unsubscribe();
     });
 
-    this.ctx = this.canvasRef.nativeElement.getContext("2d");
-    /*ctx.moveTo(0, 0);
-    ctx.lineTo(31.9, 63.2);
-    ctx.lineTo(46.1, 186.3);*/
+    this.ctx0 = this.layer0.nativeElement.getContext("2d");
+    this.ctx1 = this.layer1.nativeElement.getContext("2d");
 
-    this.ctx.fillStyle = "#FF0000";
-    this.ctx.fillRect(0, 0, 500, 500);
+    this.ctx0.fillStyle = "#FF0000";
+    this.ctx0.fillRect(0, 0, 500, 500);
 
-    this.canvasRef.nativeElement.addEventListener('mousedown', this.mouseDown, false);
-    this.canvasRef.nativeElement.addEventListener('mouseup', this.mouseUp, false);
-    this.canvasRef.nativeElement.addEventListener('mousemove', this.mouseMove, false);
-
-    /*fromEvent(ctx, "mousedown")
-      .pipe(
-        switchMap((e) => {
-          return fromEvent(ctx, 'mousemove')
-            .pipe(
-              takeUntil(fromEvent(ctx, 'mouseup')),
-              takeUntil(fromEvent(ctx, 'mouseleave')),
-              pairwise()
-            )
-        })
-      )*//*.subscribe((res: [MouseEvent, MouseEvent]) => {
-      const rect = ctx.getBoundingClientRect();
-      const prevPos = {
-        x: res[0].clientX - rect.left,
-        y: res[0].clientY - rect.top
-      };
-
-      const currentPos = {
-        x: res[1].clientX - rect.left,
-        y: res[1].clientY - rect.top
-      };
-
-      this.drawOnCanvas()
-    });*/
-      /*.subscribe(obv => {
-        alert("Mouse")
-      })*/
+    this.layer1.nativeElement.addEventListener('mousedown', this.mouseDown, false);
+    this.layer1.nativeElement.addEventListener('mouseup', this.mouseUp, false);
+    this.layer1.nativeElement.addEventListener('mousemove', this.mouseMove, false);
 
   }
 
   mouseDown = (event: MouseEvent): void => {
-    this.startX = event.pageX - this.canvasRef.nativeElement.offsetLeft;
-    this.startY = event.pageY - this.canvasRef.nativeElement.offsetTop;
+    this.startX = event.offsetX; // - this.layer1.nativeElement.offsetLeft;
+    this.startY = event.offsetY; // - this.layer1.nativeElement.offsetTop;
     this.drag = true;
   };
 
   mouseUp = (event: MouseEvent): void => {
     this.drag = false;
-    this.ctx.clearRect(0,0, this.canvasRef.nativeElement.width, this.canvasRef.nativeElement.height);
+    this.ctx1.clearRect(0,0, this.layer1.nativeElement.width, this.layer1.nativeElement.height);
 
   };
 
   mouseMove = (event: MouseEvent): void => {
     if (this.drag) {
-      this.w = (event.pageX - this.canvasRef.nativeElement.offsetLeft) - this.startX;
-      this.h = (event.pageY - this.canvasRef.nativeElement.offsetTop) - this.startY;
-      this.ctx.clearRect(0, 0, this.canvasRef.nativeElement.width, this.canvasRef.nativeElement.height);
+      this.w = event.offsetX - this.startX;
+      this.h = event.offsetY - this.startY;
+      this.ctx1.clearRect(0, 0, this.layer1.nativeElement.width, this.layer1.nativeElement.height);
       this.draw();
     }
   };
 
   draw = (): void => {
-    this.ctx.setLineDash([6]);
-    this.ctx.strokeRect(this.startX, this.startY, this.w, this.h);
+    this.ctx1.setLineDash([6]);
+    this.ctx1.strokeRect(this.startX, this.startY, this.w, this.h);
   };
 
   ngOnDestroy(): void {

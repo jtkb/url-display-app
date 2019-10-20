@@ -18,5 +18,8 @@
       <p>Column 3 is: {{urls?urls[0][0].url:''}}</p>
     </div>
   </div>
-  <canvas #myCanvas width="500" height="500"></canvas>
+  <div style="position: relative;">
+    <canvas #layer0 width="500" height="500" style="position: absolute; left: 0; top: 0; z-index: 0;"></canvas>
+    <canvas #layer1 width="500" height="500" style="position: absolute; left: 0; top: 0; z-index: 1;"></canvas>
+  </div>
 </div>
