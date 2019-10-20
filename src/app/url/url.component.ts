@@ -18,7 +18,6 @@ export class UrlComponent implements OnInit, OnDestroy {
 
   urls: Url[][];
   linesScanDataSubscription: Subscription;
-  mouseEventObservable: Observable<MouseEvent>;
   private startX: number;
   private startY: number;
   private h: number;
@@ -43,26 +42,31 @@ export class UrlComponent implements OnInit, OnDestroy {
     this.ctx0.fillStyle = "#FF0000";
     this.ctx0.fillRect(0, 0, 500, 500);
 
-    this.layer1.nativeElement.addEventListener('mousedown', this.mouseDown, false);
-    this.layer1.nativeElement.addEventListener('mouseup', this.mouseUp, false);
-    this.layer1.nativeElement.addEventListener('mousemove', this.mouseMove, false);
+    this.layer1.nativeElement.addEventListener('mousedown', this.mouseDownHandler, false);
+    this.layer1.nativeElement.addEventListener('mouseup', this.mouseUpHandler, false);
+    this.layer1.nativeElement.addEventListener('mousemove', this.mouseMoveHandler, false);
 
   }
 
-  mouseDown = (event: MouseEvent): void => {
-    this.startX = event.offsetX; // - this.layer1.nativeElement.offsetLeft;
-    this.startY = event.offsetY; // - this.layer1.nativeElement.offsetTop;
+  mouseDownHandler = (event: MouseEvent): void => {
+    this.startX = event.offsetX;
+    this.startY = event.offsetY;
     this.drag = true;
   };
 
-  mouseUp = (event: MouseEvent): void => {
+  mouseUpHandler = (event: MouseEvent): void => {
     this.drag = false;
-    this.ctx1.clearRect(0,0, this.layer1.nativeElement.width, this.layer1.nativeElement.height);
+    this.ctx1.clearRect(0, 0, this.layer1.nativeElement.width, this.layer1.nativeElement.height);
+
+    this.ctx0.setLineDash([]);
+    this.ctx0.strokeStyle = 'blue';
+    this.ctx0.strokeRect(this.startX, this.startY, this.w, this.h);
 
   };
 
-  mouseMove = (event: MouseEvent): void => {
+  mouseMoveHandler = (event: MouseEvent): void => {
     if (this.drag) {
+      this.drag = true;
       this.w = event.offsetX - this.startX;
       this.h = event.offsetY - this.startY;
       this.ctx1.clearRect(0, 0, this.layer1.nativeElement.width, this.layer1.nativeElement.height);
